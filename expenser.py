@@ -148,8 +148,8 @@ def uber():
 		
 		msg = email.message_from_string(fullmsg[0][1])
 		for part in msg.walk():
-			print part.get_content_maintype()
-			print part.get_content_subtype()
+			#print part.get_content_maintype()
+			#print part.get_content_subtype()
 			if part.get_content_maintype() == 'multipart':
 				continue
 
