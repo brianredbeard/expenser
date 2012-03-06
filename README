@@ -10,9 +10,12 @@ This is a utility for handling receipts for expense reports.  Currently it suppo
  Travel Booking Services
 	* Expedia
 
+ Car:
+	* National Rental Car
+	* Uber (Car Service)
+
  Services:
 	* Verizon Wireless
 	* Clear Wireless
-	* Uber (Car Service)
 
 The utility will log into an email account defined in the config file via IMAPS and search by "from" address for various parameters & subsequently download and "print" them to a PDF file using PyQt4.  The only dependency on Fedora should be the installation of PyQt4.
