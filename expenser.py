@@ -58,7 +58,7 @@ def getAttachment(msg,check):
   for part in msg.walk():
     if part.get_content_type() == 'application/octet-stream':
       if check(part.get_filename()):
-        return part.get_payload(decode=1)
+        return part
 
 
 def embassy_suites():
@@ -69,25 +69,18 @@ def embassy_suites():
 		msg = email.message_from_string(fullmsg[0][1])
 		
 		name_pat = re.compile('name=\".*\"')
-		for part in msg.walk():
-			if part.get_content_maintype() != 'application':
-				continue
 
-			file_type = part.get_content_type().split('/')[1]
-			if not file_type:
-				file_type = 'pdf'
+		timestamp = datetime.datetime.strptime(str(msg['date'])[0:-12], '%a, %d %b %Y %H:%M:%S')
+		timestamp += datetime.timedelta(hours=-5)
+		filename = "embassy-%s.pdf" % timestamp.isoformat('_')[0:10]
 
-			timestamp = datetime.datetime.strptime(str(msg['date'])[0:-12], '%a, %d %b %Y %H:%M:%S')
-			timestamp += datetime.timedelta(hours=-5)
-			filename = "national-%s.pdf" % timestamp.isoformat('_')[0:10]
+		attachment = getAttachment(msg,lambda x: x.endswith('.pdf'))
 
-			payload = part.get_payload(decode=True)
-
-			if not os.path.isfile(filename) :
-				# finally write the stuff
-				fp = open(filename, 'wb')
-				fp.write(part.get_payload(decode=True))
-				fp.close()
+		if not os.path.isfile(filename) :
+			# finally write the stuff
+			fp = open(filename, 'wb')
+			fp.write(attachment.get_payload(decode=True))
+			fp.close()
 
 # Retreival settings for National Rental Car - 
 # http://www.nationalcar.com
@@ -99,25 +92,18 @@ def national():
 		msg = email.message_from_string(fullmsg[0][1])
 		
 		name_pat = re.compile('name=\".*\"')
-		for part in msg.walk():
-			if part.get_content_maintype() != 'application':
-				continue
 
-			file_type = part.get_content_type().split('/')[1]
-			if not file_type:
-				file_type = 'pdf'
+		timestamp = datetime.datetime.strptime(str(msg['date'])[0:-12], '%a, %d %b %Y %H:%M:%S')
+		timestamp += datetime.timedelta(hours=-5)
+		filename = "national-%s.pdf" % timestamp.isoformat('_')[0:10]
 
-			timestamp = datetime.datetime.strptime(str(msg['date'])[0:-12], '%a, %d %b %Y %H:%M:%S')
-			timestamp += datetime.timedelta(hours=-5)
-			filename = "national-%s.pdf" % timestamp.isoformat('_')[0:10]
+		attachment = getAttachment(msg,lambda x: x.endswith('.pdf'))
 
-			payload = part.get_payload(decode=True)
-
-			if not os.path.isfile(filename) :
-				# finally write the stuff
-				fp = open(filename, 'wb')
-				fp.write(part.get_payload(decode=True))
-				fp.close()
+		if not os.path.isfile(filename) :
+			# finally write the stuff
+			fp = open(filename, 'wb')
+			fp.write(attachment.get_payload(decode=True))
+			fp.close()
 
 # Retreival settings for Clear Wireless- 
 # http://www.clear.com
@@ -259,7 +245,8 @@ def marriott():
 #uber()
 #marriott()
 #united()
-national()
+#national()
+embassy_suites()
 #hilton()
 
 imap.logout()
